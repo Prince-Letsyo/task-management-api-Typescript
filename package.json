@@ -1,16 +1,27 @@
 {
-  "name": "task-management-api(Typescript)",
+  "name": "task-management-api-Typescript",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Prince Letsyo <55394337+Prince-Letsyo@users.noreply.github.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint 'src/**/*.{ts,js}' --fix"
+  },
   "dependencies": {
+    "dotenv": "^17.2.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }
