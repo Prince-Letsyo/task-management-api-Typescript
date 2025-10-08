@@ -11,12 +11,20 @@
     "lint": "eslint 'src/**/*.{ts,js}' --fix"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "inversify": "^7.10.2",
+    "inversify-express-utils": "^6.5.0",
+    "jose": "^6.1.0",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
+    "@types/reflect-metadata": "^0.1.0",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
