@@ -1,0 +1,13 @@
+model Task {
+    id          Int        @id @default(autoincrement())
+    title       String
+    description String?
+    status      TaskStatus @default(PENDING)
+    user_id     Int?
+    user        User?      @relation(fields: [user_id], references: [id])
+
+    @@index([title])
+    @@index([id])
+    @@index([user_id])
+    @@map("tasks")
+}

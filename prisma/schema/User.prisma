@@ -1,0 +1,13 @@
+model User {
+    id             Int     @id @default(autoincrement())
+    username       String  @unique
+    email          String  @unique
+    hashedPassword String  @map("hashed_password")
+    is_active      Boolean @default(false)
+    tasks          Task[]
+
+    @@index([username], name: "username_idx")
+    @@index([email], name: "email_idx")
+    @@index([id], name: "id_idx")
+    @@map("users")
+}

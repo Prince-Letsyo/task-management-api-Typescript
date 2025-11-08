@@ -14,7 +14,7 @@ declare global {
         logLevel: "debug" | "info" | "warn" | "error";
     }
 
-    interface EnvironmentConfig  extends BaseConfig {
+    interface EnvironmentConfig extends BaseConfig {
         database: {
             url?: string;
             logging: boolean;
@@ -22,6 +22,11 @@ declare global {
         features: {
             enableDebugRoutes: boolean;
         };
+    }
+    namespace Express {
+        interface Request {
+            validatedBody?: any;
+        }
     }
 }
 
