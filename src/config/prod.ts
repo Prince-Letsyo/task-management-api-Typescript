@@ -1,5 +1,5 @@
 // src/config/prod.js
-import "dotenv/config"
+import 'dotenv/config';
 
 export const prodConfig: EnvConfig = {
   database: {

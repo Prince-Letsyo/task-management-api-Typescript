@@ -1,8 +1,6 @@
-
-
 export const testConfig: EnvConfig = {
   database: {
-    url: "sqlite::memory:",
+    url: 'sqlite::memory:',
     logging: false,
   },
   features: {

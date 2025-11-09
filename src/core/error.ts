@@ -2,7 +2,7 @@ class AppError extends Error {
   statusCode: number;
   isOperational: boolean;
 
-  constructor(message = "Something went wrong", statusCode = 500) {
+  constructor(message = 'Something went wrong', statusCode = 500) {
     super(message);
     this.name = this.constructor.name;
     this.statusCode = statusCode;
@@ -13,24 +13,24 @@ class AppError extends Error {
 }
 
 export class BadRequestError extends AppError {
-  constructor(message = "Conflict keys") {
+  constructor(message = 'Conflict keys') {
     super(message, 400);
   }
 }
 export class ConflictError extends AppError {
-  constructor(message = "Conflict keys") {
+  constructor(message = 'Conflict keys') {
     super(message, 409);
   }
 }
 
 export class NotFoundError extends AppError {
-  constructor(message = "Resource not found") {
+  constructor(message = 'Resource not found') {
     super(message, 404);
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message = "Unauthorized access") {
+  constructor(message = 'Unauthorized access') {
     super(message, 401);
   }
 }

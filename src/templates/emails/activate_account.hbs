@@ -1,0 +1,11 @@
+<!-- src/templates/emails/activate_account.hbs -->
+<h2>Activate Your Account</h2>
+<p>Hello {{name}},</p>
+<p>Thank you for registering with <strong>{{appName}}</strong>.</p>
+<p>Please activate your account by clicking the link below:</p>
+<a href="{{activationUrl}}" class="btn btn-primary">Activate Account</a>
+ <p>
+    If the button doesn't work, copy-paste this URL:<br />
+    <code>{{ activationUrl }}</code>
+  </p>
+<p><small>This link will expire in 24 hours.</small></p>

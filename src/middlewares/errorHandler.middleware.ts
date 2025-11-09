@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-import { PrismaClientKnownRequestError } from '../generated/prisma/internal/prismaNamespace';
+import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
+import { PrismaClientKnownRequestError } from "../generated/prisma/internal/prismaNamespace";
 
 // Types
 interface ValidationErrorDetail {
