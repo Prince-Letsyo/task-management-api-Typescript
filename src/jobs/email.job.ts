@@ -4,8 +4,6 @@ import { BackgroundTask } from '../tasks';
 import { renderWithLayout } from '../utils/template';
 import { config } from '../config';
 
-
-
 const transporter = nodemailer.createTransport({
   host: config.env.SMTP_HOST,
   port: Number(config.env.SMTP_PORT),

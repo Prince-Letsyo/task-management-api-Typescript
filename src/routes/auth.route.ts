@@ -3,15 +3,15 @@ import {
   AccessTokenRequestSchema,
   ActivateAccountRequest,
   ActivateAccountRequestSchema,
-  UserCreate,
-  UserCreateSchema,
-  UserLogin,
-  UserLoginSchema,
-  UserPasswordRequestRest,
-  UserPasswordRequestRestSchema,
-  UserPasswordRest,
-  UserPasswordRestSchema,
-} from '../schema/user.schema';
+  AuthCreate,
+  AuthCreateSchema,
+  AuthLogin,
+  AuthLoginSchema,
+  AuthPasswordRequest,
+  AuthPasswordRequestSchema,
+  AuthPasswordReset,
+  AuthPasswordResetSchema,
+} from '../schema/auth.schema';
 import { Router, Request, Response } from 'express';
 import { authController } from '../controllers/auth.controller';
 import { validate } from '../middlewares/validate.middleware';
@@ -24,9 +24,9 @@ const authRouter = Router();
 authRouter
   .post(
     '/sign_up',
-    validate(UserCreateSchema),
+    validate(AuthCreateSchema),
     async (req: Request, res: Response) => {
-      const userCreate = req.validatedBody as UserCreate;
+      const userCreate = req.validatedBody as AuthCreate;
       const newUserPayload = await authController.signUp(userCreate);
       const activationUrl = `${req.protocol}://${req.get('host')}/auth/activate?token=${newUserPayload.activateToken.token}`;
       await taskQueue.add(
@@ -104,19 +104,18 @@ authRouter
   )
   .post(
     '/sign_in',
-    validate(UserLoginSchema),
+    validate(AuthLoginSchema),
     async (req: Request, res: Response) => {
-      const userLogin = req.validatedBody as UserLogin;
+      const userLogin = req.validatedBody as AuthLogin;
       const userToken = await authController.logIn(userLogin);
       res.status(200).json({ token: userToken });
     }
   )
   .post(
     '/request-password-reset',
-    validate(UserPasswordRequestRestSchema),
+    validate(AuthPasswordRequestSchema),
     async (req: Request, res: Response) => {
-      const userPasswordRequestRest =
-        req.validatedBody as UserPasswordRequestRest;
+      const userPasswordRequestRest = req.validatedBody as AuthPasswordRequest;
       const { username, email, activateToken } =
         await authController.passwordRequestRest(userPasswordRequestRest.email);
       const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password?token=${activateToken.token}`;
@@ -139,9 +138,9 @@ authRouter
   )
   .post(
     '/reset-password',
-    validate(UserPasswordRestSchema),
+    validate(AuthPasswordResetSchema),
     async (req: Request, res: Response) => {
-      const userPasswordRest = req.validatedBody as UserPasswordRest;
+      const userPasswordRest = req.validatedBody as AuthPasswordReset;
       await authController.passwordRest(userPasswordRest);
       res.status(200).json({
         message: 'Password has been reset successfully.',

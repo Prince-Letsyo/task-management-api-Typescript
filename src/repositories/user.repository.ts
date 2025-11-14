@@ -1,6 +1,6 @@
-import prisma from "../core/db";
-import { BadRequestError, NotFoundError } from "../core/error";
-import { passwordValidator } from "../utils/auth/password.auth";
+import prisma from '../core/db';
+import { BadRequestError, NotFoundError } from '../core/error';
+import { passwordValidator } from '../utils/auth/password.auth';
 
 class UserRepository {
   getUserByUsernameOREmail = async (userName: string, email: string) => {

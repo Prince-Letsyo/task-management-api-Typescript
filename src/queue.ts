@@ -1,8 +1,8 @@
-import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
+import { Queue } from 'bullmq';
 import { config } from './config';
 
-const connection = new IORedis(config.env.REDIS_URL, {
+export const connection = new IORedis(config.env.REDIS_URL, {
   maxRetriesPerRequest: null,
   enableOfflineQueue: false,
 });

@@ -3,19 +3,15 @@ import { IncomingHttpHeaders } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 import appLogger, { filterSensitive } from '../utils/logging';
 
-// --- Middleware ---
-export async function loggingMiddleware(
+export function loggingMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   const reqId = uuidv4();
   const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
+  req.reqId = reqId;
 
-  // Attach to request context
-  (req as any).reqId = reqId;
-
-  // Capture request info
   const headers: IncomingHttpHeaders = req.headers;
   const isJson = headers['content-type']?.includes('application/json');
 
@@ -35,34 +31,22 @@ export async function loggingMiddleware(
     body,
   });
 
-  const originalSend = res.send;
-  const chunks: any[] = [];
+  const originalSend = res.send.bind(res);
 
-  res.send = function (chunk: any) {
-    chunks.push(chunk);
-    return originalSend.apply(res, arguments as any);
+  let responseBody: any;
+  res.send = function (body) {
+    responseBody = body;
+    return originalSend(body);
   };
 
-  // Proceed with request
-  try {
-    await new Promise<void>((resolve, reject) => {
-      res.on('finish', resolve);
-      res.on('error', reject);
-      next();
-    });
-
-    const rawBody = Buffer.concat(
-      chunks.map((c) => (Buffer.isBuffer(c) ? c : Buffer.from(String(c))))
-    ).toString('utf8');
-
+  res.on('finish', () => {
     let parsedBody: any;
     try {
-      parsedBody = res
+      const isJsonResponse = res
         .getHeader('content-type')
         ?.toString()
-        .includes('application/json')
-        ? JSON.parse(rawBody)
-        : rawBody;
+        .includes('application/json');
+      parsedBody = isJsonResponse ? JSON.parse(responseBody) : responseBody;
     } catch {
       parsedBody = '[Non-JSON response]';
     }
@@ -76,16 +60,7 @@ export async function loggingMiddleware(
       statusCode: res.statusCode,
       body: redactedResponse,
     });
-  } catch (err: any) {
-    if (err?.name?.includes('Sequelize') || err?.name?.includes('SQL')) {
-      appLogger.error('Database failed', { reqId, error: err.message });
-    } else {
-      appLogger.error('Request failed', {
-        reqId,
-        error: err.message,
-        stack: err.stack,
-      });
-    }
-    next(err);
-  }
+  });
+
+  next();
 }

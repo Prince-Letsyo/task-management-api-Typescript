@@ -26,9 +26,20 @@ declare global {
     namespace Express {
         interface Request {
             validatedBody?: any;
+            reqId?:string;
+            // user?: { username: string, email: string }
         }
     }
-}
 
+}
+declare module 'express-session' {
+    interface SessionData {
+        userId?: number;
+        username?: string;
+        email?: string;
+        role?: string;
+        // add any other session fields you use
+    }
+}
 
 export { }

@@ -1,11 +1,16 @@
-import AppError from "../core/error";
-import userRepository from "../repositories/user.repository";
-import { AccessTokenRequest, UserCreate, UserLogin, UserPasswordRest } from "../schema/user.schema";
-import { passwordValidator } from "../utils/auth/password.auth";
-import jwtAuthToken from "../utils/auth/token.auth";
+import AppError from '../core/error';
+import userRepository from '../repositories/user.repository';
+import {
+  AccessTokenRequest,
+  AuthCreate,
+  AuthLogin,
+  AuthPasswordReset,
+} from '../schema/auth.schema';
+import { passwordValidator } from '../utils/auth/password.auth';
+import jwtAuthToken from '../utils/auth/token.auth';
 
 class AuthController {
-  signUp = async (userCreate: UserCreate) => {
+  signUp = async (userCreate: AuthCreate) => {
     try {
       await userRepository.getUserByUsernameOREmail(
         userCreate.username,
@@ -63,7 +68,7 @@ class AuthController {
       activateToken,
     };
   };
-  logIn = async (userLogin: UserLogin) => {
+  logIn = async (userLogin: AuthLogin) => {
     try {
       const activeUser = await userRepository.getUserByUsername(
         userLogin.username
@@ -87,7 +92,7 @@ class AuthController {
     }
   };
 
-  passwordRest = async (userPasswordRest: UserPasswordRest) => {
+  passwordRest = async (userPasswordRest: AuthPasswordReset) => {
     const user = await userRepository.getUserByEmail(userPasswordRest.email);
     const hashedPassword = await passwordValidator.getPasswordHash(
       userPasswordRest.password1
@@ -109,9 +114,7 @@ class AuthController {
 
   getAccessToken = async (accessRequestRest: AccessTokenRequest) => {
     try {
-      const payload = await jwtAuthToken.decodeToken(
-        accessRequestRest.token
-      );
+      const payload = await jwtAuthToken.decodeToken(accessRequestRest.token);
       if (payload) {
         const { username, email } = payload as {
           username: string;

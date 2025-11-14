@@ -1,4 +1,3 @@
-// src/env.js
 import 'dotenv/config';
 import { z } from 'zod';
 
@@ -15,6 +14,12 @@ export const envSchema = z.object({
     .min(32, 'Secret key provided is less than 32 characters')
     .default(
       'c54e0c022aee46c6fd4c606dd133a3a30e36dcea7ce79107e85b99a248885d81'
+    ),
+  SESSION_SECRET: z
+    .string()
+    .min(32, 'Session secret key provided is less than 32 characters')
+    .default(
+      'af27a1dd2dc818340699dce88b669622f6701c9e39b7bb7e8a0710802132fdc7'
     ),
   ACCESS_TOKEN_EXPIRE_MINUTES: z.coerce.number().int().positive().default(30),
   REFRESH_TOKEN_EXPIRE_WEEKS: z.coerce.number().int().positive().default(4),
