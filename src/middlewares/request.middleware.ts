@@ -14,7 +14,7 @@ export const jwtDecoder = async (
     req.session.username = undefined;
     req.session.email = undefined;
     req.session.userId = undefined;
-    return next();
+    return next(new UnauthorizedError('Token not provided'));
   }
 
   const token = tokenHeader.split(' ')[1];
@@ -35,13 +35,4 @@ export const jwtDecoder = async (
     req.session.email = undefined;
     return next(err);
   }
-};
-
-export const authenticatedUser = () => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.session.username) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    next();
-  };
 };

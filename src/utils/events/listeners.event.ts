@@ -1,7 +1,6 @@
-import { eventBus } from './event-bus';
+import { eventBus } from './event-bus.event';
 import { taskQueue } from '../queue';
 import '../../jobs/email.job';
-
 
 // Example: Log analytics
 eventBus.on('user:registered', async (payload) => {

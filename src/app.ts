@@ -2,13 +2,12 @@ import { config } from './config/index';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { loggingMiddleware } from './middlewares/logging.middleware';
-import { jwtDecoder } from './middlewares/request.middleware';
 import routes from './routes';
 import errorHandler from './middlewares/errorHandler.middleware';
 import { unconnectedRedisClient, connectedRedisClient } from './utils/redis';
 import { createSessionMiddleware } from './middlewares/session.middleware';
 import { rateLimit } from './middlewares/rate-limit.middleware';
-import { eventBus } from './utils/events/event-bus';
+import { eventBus } from './utils/events/event-bus.event';
 import { connection } from './utils/queue';
 
 async function startServer() {
@@ -23,7 +22,6 @@ async function startServer() {
   const sessionMiddleware = createSessionMiddleware(unconnectedRedisClient);
 
   app.use(sessionMiddleware);
-  app.use(jwtDecoder);
   app.use(loggingMiddleware);
 
   app.get('/', (req: Request, res: Response) => {

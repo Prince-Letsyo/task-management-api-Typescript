@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import { BackgroundTask } from '../utils/tasks';
 import { renderWithLayout } from '../utils/template';
 import { config } from '../config';
-import { eventBus } from '../utils/events/event-bus';
+import { eventBus } from '../utils/events/event-bus.event';
 
 const transporter = nodemailer.createTransport({
   host: config.env.SMTP_HOST,
@@ -40,7 +40,6 @@ export class EmailService {
       html,
     });
 
-
     return { success: true, messageId: info.messageId };
   }
 
@@ -57,19 +56,21 @@ export class EmailService {
       activationUrl: data.activationUrl,
     });
 
-    const info = await transporter.sendMail({
-      from: config.env.SMTP_FROM,
-      to: data.email,
-      subject: 'Activate Your Account',
-      html,
-    }).then(async (mail) => {
-      await eventBus.publish('user:registered', {
-        userId: data.userId,
-        email: data.email,
-        name: data.name,
+    const info = await transporter
+      .sendMail({
+        from: config.env.SMTP_FROM,
+        to: data.email,
+        subject: 'Activate Your Account',
+        html,
       })
-      return mail
-    })
+      .then(async (mail) => {
+        await eventBus.publish('user:registered', {
+          userId: data.userId,
+          email: data.email,
+          name: data.name,
+        });
+        return mail;
+      });
 
     return { success: true, messageId: info.messageId };
   }

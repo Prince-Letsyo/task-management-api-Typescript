@@ -1,5 +1,4 @@
 import { Request, Response, Router } from 'express';
-import { authenticatedUser } from '../middlewares/request.middleware';
 import { taskController } from '../controllers/task.controller';
 import { TaskModel } from '../generated/prisma/models';
 import {
@@ -15,7 +14,7 @@ import { Task } from '../generated/prisma/client';
 
 const taskRouter = Router();
 taskRouter
-  .get('/', authenticatedUser(), async (req: Request, res: Response) => {
+  .get('/', async (req: Request, res: Response) => {
     const { userId, username } = req.session;
     let tasks: TaskModel[] = [];
     if (userId && username) {
@@ -25,7 +24,7 @@ taskRouter
       });
     }
   })
-  .get('/:id', authenticatedUser(), async (req: Request, res: Response) => {
+  .get('/:id', async (req: Request, res: Response) => {
     const { session, params } = req;
     const { id } = params;
     const { userId, username } = session;
@@ -39,7 +38,7 @@ taskRouter
   })
   .post(
     '/',
-    authenticatedUser(),
+
     validate(TaskCreateSchema),
     async (req: Request, res: Response) => {
       const taskCreate = req.validatedBody as TaskCreate;
@@ -56,7 +55,7 @@ taskRouter
   )
   .put(
     '/:id',
-    authenticatedUser(),
+
     validate(TaskUpdateSchema),
     async (req: Request, res: Response) => {
       const taskUpdate = req.validatedBody as TaskUpdate;
@@ -79,7 +78,7 @@ taskRouter
   )
   .patch(
     '/:id',
-    authenticatedUser(),
+
     validate(TaskStatusUpdateSchema),
     async (req: Request, res: Response) => {
       const taskStatusUpdate = req.validatedBody as TaskStatusUpdate;
@@ -100,7 +99,7 @@ taskRouter
       }
     }
   )
-  .delete('/:id', authenticatedUser(), async (req: Request, res: Response) => {
+  .delete('/:id', async (req: Request, res: Response) => {
     const { session, params } = req;
     const { id } = params;
     const { userId, username } = session;
