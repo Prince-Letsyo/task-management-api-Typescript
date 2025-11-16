@@ -7,8 +7,8 @@ import errorHandler from './middlewares/errorHandler.middleware';
 import { unconnectedRedisClient, connectedRedisClient } from './utils/redis';
 import { createSessionMiddleware } from './middlewares/session.middleware';
 import { rateLimit } from './middlewares/rate-limit.middleware';
-import { eventBus } from './utils/events/event-bus.event';
 import { connection } from './utils/queue';
+import { streamBus } from './utils/events/stream-bus.event';
 
 async function startServer() {
   const app: Application = express();
@@ -45,7 +45,8 @@ async function startServer() {
 
   process.on('SIGTERM', async () => {
     console.log('Shutting down...');
-    await eventBus.close();
+    await streamBus.close();
+    await connectedClient.quit();
     await connection.quit();
     process.exit(0);
   });

@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import { BackgroundTask } from '../utils/tasks';
 import { renderWithLayout } from '../utils/template';
 import { config } from '../config';
-import { eventBus } from '../utils/events/event-bus.event';
+import { streamBus } from '../utils/events/stream-bus.event';
 
 const transporter = nodemailer.createTransport({
   host: config.env.SMTP_HOST,
@@ -64,7 +64,7 @@ export class EmailService {
         html,
       })
       .then(async (mail) => {
-        await eventBus.publish('user:registered', {
+        await streamBus.publish('user:registered', {
           userId: data.userId,
           email: data.email,
           name: data.name,

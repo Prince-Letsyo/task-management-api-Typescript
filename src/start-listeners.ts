@@ -1,2 +1,2 @@
-import './utils/events/listeners.event';
+import './utils/events/stream-listeners.event';
 console.log('Event listeners started...');

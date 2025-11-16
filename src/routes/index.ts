@@ -3,8 +3,8 @@ import authRouter from './auth.route';
 import taskRouter from './task.route';
 import { jwtDecoder } from '../middlewares/request.middleware';
 
-const routes = Router();
-
-routes.use('/auth', authRouter).use('/tasks', jwtDecoder, taskRouter);
+const routes = Router()
+  .use('/auth', authRouter)
+  .use('/tasks', jwtDecoder, taskRouter);
 
 export default routes;

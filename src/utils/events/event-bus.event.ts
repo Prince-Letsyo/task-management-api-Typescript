@@ -1,5 +1,5 @@
 import { type Redis } from 'ioredis';
-import { connection } from '../queue'; // Assuming 'connection' is your main IORedis instance
+import { connection } from '../queue';
 
 type Listener<T = any> = (payload: T) => Promise<void> | void;
 
