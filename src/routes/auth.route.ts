@@ -33,6 +33,7 @@ authRouter
       await taskQueue.add(
         'send-activation-email',
         {
+          userId: newUserPayload.userId,
           name: newUserPayload.username,
           email: newUserPayload.email,
           activationUrl,
@@ -57,12 +58,13 @@ authRouter
       token as string
     );
     if (activeAccountPayload) {
-      const { username, email } = activeAccountPayload;
+      const { username, email,userId } = activeAccountPayload;
       const loginUrl = `${req.protocol}://${req.get('host')}/auth/login`;
       await taskQueue.add(
         'send-welcome-email',
         {
           name: username,
+          userId,
           email,
           loginUrl,
         },
@@ -89,6 +91,7 @@ authRouter
       await taskQueue.add(
         'send-activation-email',
         {
+          userId: user.userId,
           name: user.username,
           email: user.email,
           activationUrl,
@@ -123,7 +126,7 @@ authRouter
     validate(AuthPasswordRequestSchema),
     async (req: Request, res: Response) => {
       const userPasswordRequestRest = req.validatedBody as AuthPasswordRequest;
-      const { username, email, activateToken } =
+      const { username, email,userId, activateToken } =
         await authController.passwordRequestRest(userPasswordRequestRest.email);
       const resetUrl = `${req.protocol}://${req.get('host')}/auth/reset-password?token=${activateToken.token}`;
       await taskQueue.add(
@@ -131,6 +134,7 @@ authRouter
         {
           name: username,
           email,
+          userId,
           resetUrl,
         },
         {

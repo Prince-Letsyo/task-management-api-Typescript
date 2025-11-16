@@ -31,6 +31,7 @@ class AuthController {
         email: newUser.email,
       });
       return {
+        userId: newUser.id,
         username: newUser.username,
         email: newUser.email,
         activateToken,
@@ -47,6 +48,7 @@ class AuthController {
         const { username, email, userId } = payload as unknown as SessionUser;
         await userRepository.activateUserAccount(username);
         return {
+          userId,
           username,
           email,
         };
@@ -63,6 +65,7 @@ class AuthController {
       email: user.email,
     });
     return {
+      userId: user.id,
       username: user.username,
       email: user.email,
       activateToken,
@@ -109,6 +112,7 @@ class AuthController {
     };
     const activateToken = await jwtAuthToken.activateToken(payload);
     return {
+      userId: user.id,
       username: user.username,
       email: user.email,
       activateToken,

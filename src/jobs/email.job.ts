@@ -40,17 +40,13 @@ export class EmailService {
       html,
     });
     
-    await eventBus.publish('user:registered', {
-      userId: data.userId,
-      email: data.email,
-      name: data.name,
-    });
 
     return { success: true, messageId: info.messageId };
   }
 
   @BackgroundTask('send-activation-email')
   static async sendActivationEmail(data: {
+    userId:number;
     email: string;
     name: string;
     activationUrl: string;
@@ -66,6 +62,12 @@ export class EmailService {
       to: data.email,
       subject: 'Activate Your Account',
       html,
+    });
+
+    await eventBus.publish('user:registered', {
+      userId: data.userId,
+      email: data.email,
+      name: data.name,
     });
 
     return { success: true, messageId: info.messageId };
