@@ -10,8 +10,9 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "types": ["node"]
   },
-  "include": ["src"],
+  "include": ["src/**/*", "src/types/**/*"],
   "files": ["global.d.ts"]
 }

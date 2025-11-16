@@ -1,8 +1,8 @@
-// src/jobs/email.job.ts
 import nodemailer from 'nodemailer';
-import { BackgroundTask } from '../tasks';
+import { BackgroundTask } from '../utils/tasks';
 import { renderWithLayout } from '../utils/template';
 import { config } from '../config';
+import { eventBus } from '../utils/events/event-bus';
 
 const transporter = nodemailer.createTransport({
   host: config.env.SMTP_HOST,
@@ -22,6 +22,7 @@ transporter.verify((err) => {
 export class EmailService {
   @BackgroundTask('send-welcome-email')
   static async sendWelcomeEmail(data: {
+    userId:number;
     email: string;
     name: string;
     loginUrl: string;
@@ -37,6 +38,12 @@ export class EmailService {
       to: data.email,
       subject: `Welcome to ${config.appName}`,
       html,
+    });
+    
+    await eventBus.publish('user:registered', {
+      userId: data.userId,
+      email: data.email,
+      name: data.name,
     });
 
     return { success: true, messageId: info.messageId };

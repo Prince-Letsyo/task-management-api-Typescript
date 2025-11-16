@@ -7,7 +7,8 @@
   "scripts": {
     "dev:api": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
     "dev:worker": "nodemon --watch src --ext ts --exec ts-node src/worker.ts",
-    "dev": "concurrently \"yarn dev:api\" \"yarn dev:worker\"",
+    "dev:start-listeners": "nodemon --watch src --ext ts --exec ts-node src/start-listeners.ts",
+    "dev": "concurrently \"yarn dev:api\" \"yarn dev:worker\" \"yarn dev:start-listeners\"",
     "db:up": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
@@ -16,7 +17,8 @@
     "build": "tsc",
     "start:api": "node dist/server.js",
     "start:worker": "node dist/worker.js",
-    "start": "concurrently \"yarn start:api\" \"yarn start:worker\"",
+    "start:start-listeners": "node dist/start-listeners.js",
+    "start": "concurrently \"yarn start:api\" \"yarn start:worker\" \"yarn start:start-listeners\"",
     "prettier": "prettier --write 'src/**/*.{ts,js,json,md}'",
     "lint": "eslint 'src/**/*.{ts,js}' --fix"
   },

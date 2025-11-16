@@ -15,15 +15,16 @@ import {
 import { Router, Request, Response } from 'express';
 import { authController } from '../controllers/auth.controller';
 import { validate } from '../middlewares/validate.middleware';
-import { taskQueue } from '../queue';
+import { taskQueue } from '../utils/queue';
 import '../jobs/email.job';
 import { BadRequestError } from '../core/error';
+import { rateLimit } from '../middlewares/rate-limit.middleware';
 
 const authRouter = Router();
 
 authRouter
   .post(
-    '/sign_up',
+    '/sign-up',
     validate(AuthCreateSchema),
     async (req: Request, res: Response) => {
       const userCreate = req.validatedBody as AuthCreate;
@@ -103,8 +104,14 @@ authRouter
     }
   )
   .post(
-    '/sign_in',
+    '/sign-in',
     validate(AuthLoginSchema),
+    rateLimit(
+      10,
+      60 * 15,
+      (req: Request) =>
+        `sign-in:${(req.validatedBody as AuthLogin).username}:${req.ip}`
+    ),
     async (req: Request, res: Response) => {
       const userLogin = req.validatedBody as AuthLogin;
       const userToken = await authController.logIn(userLogin);

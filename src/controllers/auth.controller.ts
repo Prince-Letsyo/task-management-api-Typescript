@@ -6,6 +6,7 @@ import {
   AuthLogin,
   AuthPasswordReset,
 } from '../schema/auth.schema';
+import { SessionUser } from '../types/session-user';
 import { passwordValidator } from '../utils/auth/password.auth';
 import jwtAuthToken from '../utils/auth/token.auth';
 
@@ -25,6 +26,7 @@ class AuthController {
         hashedPassword,
       });
       const activateToken = await jwtAuthToken.activateToken({
+        userId: newUser.id,
         username: newUser.username,
         email: newUser.email,
       });
@@ -42,10 +44,7 @@ class AuthController {
     try {
       const payload = await jwtAuthToken.decodeToken(token);
       if (payload) {
-        const { username, email } = payload as {
-          username: string;
-          email: string;
-        };
+        const { username, email, userId } = payload as unknown as SessionUser;
         await userRepository.activateUserAccount(username);
         return {
           username,
@@ -59,6 +58,7 @@ class AuthController {
   activateAccountRequest = async (email: string) => {
     const user = await userRepository.getUserByEmail(email);
     const activateToken = await jwtAuthToken.activateToken({
+      userId: user.id,
       username: user.username,
       email: user.email,
     });
@@ -81,6 +81,7 @@ class AuthController {
         throw new AppError('Incorrect username or password');
       }
       const payload = {
+        userId: activeUser.id,
         username: activeUser.username,
         email: activeUser.email,
       };
@@ -102,12 +103,14 @@ class AuthController {
   passwordRequestRest = async (email: string) => {
     const user = await userRepository.getUserByEmail(email);
     const payload = {
+      userId: user.id,
       username: user.username,
       email: user.email,
     };
     const activateToken = await jwtAuthToken.activateToken(payload);
     return {
-      ...payload,
+      username: user.username,
+      email: user.email,
       activateToken,
     };
   };
@@ -116,11 +119,12 @@ class AuthController {
     try {
       const payload = await jwtAuthToken.decodeToken(accessRequestRest.token);
       if (payload) {
-        const { username, email } = payload as {
-          username: string;
-          email: string;
-        };
-        const accessToken = await jwtAuthToken.accessToken({ username, email });
+        const { username, email, userId } = payload as unknown as SessionUser;
+        const accessToken = await jwtAuthToken.accessToken({
+          username,
+          email,
+          userId,
+        });
         return accessToken;
       }
     } catch (err) {

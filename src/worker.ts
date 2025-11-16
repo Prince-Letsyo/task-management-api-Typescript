@@ -1,7 +1,6 @@
-// src/worker.ts
 import { Worker } from 'bullmq';
 import './jobs/email.job';
-import { taskQueue } from './queue';
+import { JOB_CACHE_KEY, taskQueue } from './utils/queue';
 
 const worker = new Worker(
   'taskQueue',
@@ -13,6 +12,7 @@ const worker = new Worker(
   {
     connection: taskQueue.opts.connection,
     concurrency: 5,
+    prefix: JOB_CACHE_KEY,
   }
 );
 

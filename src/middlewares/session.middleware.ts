@@ -8,8 +8,8 @@ export function createSessionMiddleware(client: RedisClientType) {
   return session({
     store: new RedisStore({
       // Use the connected client passed to the function
-      client: client, 
-      prefix: 'sess:',
+      client: client,
+      prefix: `${config.cacheKey}sess:`,
       ttl: 60 * 60 * 24 * 7,
     }),
     name: 'sid',

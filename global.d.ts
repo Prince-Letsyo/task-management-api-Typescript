@@ -12,6 +12,7 @@ declare global {
         appName: string;
         enableCORS: boolean;
         logLevel: "debug" | "info" | "warn" | "error";
+        cacheKey: string;
     }
 
     interface EnvironmentConfig extends BaseConfig {

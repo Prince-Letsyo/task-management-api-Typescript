@@ -1,8 +1,6 @@
-import startServer from "./app";
+import startServer from './app';
 
-
-
-startServer().catch(err => {
-    console.error('Fatal error during server startup:', err);
-    process.exit(1);
+startServer().catch((err) => {
+  console.error('Fatal error during server startup:', err);
+  process.exit(1);
 });

@@ -1,11 +1,10 @@
-import { SetOptions } from 'redis';
+import { RedisArgument, SetOptions } from 'redis';
 import { connectedRedisClient } from './redis'; // Rename the import
+import { config } from '../config';
 
-// Function to get the connected client instance
 const getRedisClient = async () => {
   return await connectedRedisClient;
-}
-
+};
 
 export class Cache {
   private static defaultTTL: {
@@ -15,7 +14,7 @@ export class Cache {
 
   static async get<T>(key: string): Promise<T | null> {
     const client = await getRedisClient();
-    const data = await client.get(key);
+    const data = await client.get(`${config.cacheKey}${key}`);
     if (!data) return null;
     return JSON.parse(data) as T;
   }
@@ -26,6 +25,7 @@ export class Cache {
     options?: SetOptions,
     tags?: string[]
   ): Promise<void> {
+    key = `${config.cacheKey}${key}`;
     const ttl = options?.expiration ?? this.defaultTTL;
     const client = await getRedisClient();
     await client.set(key, JSON.stringify(value), {
@@ -38,20 +38,34 @@ export class Cache {
 
   static async del(key: string): Promise<void> {
     const client = await getRedisClient();
-    await client.del(key);
+    await client.del(`${config.cacheKey}${key}`);
   }
 
   static async clearPattern(pattern: string): Promise<void> {
     const client = await getRedisClient();
-    const keys = await client.keys(pattern);
-    if (keys.length > 0) {
-      await client.del(keys);
-    }
+    let cursor: RedisArgument = '0';
+    const batchSize = 100;
+
+    do {
+      const result = await client.scan(cursor, {
+        MATCH: `${config.cacheKey}${pattern}`,
+        COUNT: batchSize,
+      });
+
+      cursor = result.cursor;
+      const keys = result.keys;
+
+      if (keys.length > 0) {
+        await client.del(keys);
+      }
+    } while (cursor !== '0');
+
+    console.log(`Cleared keys matching: ${pattern}`);
   }
 }
 
 export class CacheTag {
-  private static TAG_PREFIX = ' :';
+  private static TAG_PREFIX = `${config.cacheKey}tag:`;
 
   static async tag(key: string, ...tags: string[]): Promise<void> {
     for (const tag of tags) {

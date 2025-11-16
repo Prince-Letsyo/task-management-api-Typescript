@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwtAuthToken from '../utils/auth/token.auth';
 import { UnauthorizedError } from '../core/error';
+import { SessionUser } from '../types/session-user';
 
 export const jwtDecoder = async (
   req: Request,
@@ -12,7 +13,8 @@ export const jwtDecoder = async (
   if (!tokenHeader || !tokenHeader.startsWith('Bearer ')) {
     req.session.username = undefined;
     req.session.email = undefined;
-    return next(new UnauthorizedError('Missing or invalid token'));
+    req.session.userId = undefined;
+    return next();
   }
 
   const token = tokenHeader.split(' ')[1];
@@ -20,17 +22,16 @@ export const jwtDecoder = async (
   try {
     const payload = await jwtAuthToken.decodeToken(token);
 
-    const { username, email } = payload as {
-      username: string;
-      email: string;
-    };
+    const { username, email, userId } = payload as unknown as SessionUser;
 
     req.session.username = username;
     req.session.email = email;
+    req.session.userId = userId;
 
     return next();
   } catch (err) {
     req.session.username = undefined;
+    req.session.userId = undefined;
     req.session.email = undefined;
     return next(err);
   }

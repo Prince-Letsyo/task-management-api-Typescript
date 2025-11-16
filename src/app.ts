@@ -5,12 +5,15 @@ import { loggingMiddleware } from './middlewares/logging.middleware';
 import { jwtDecoder } from './middlewares/request.middleware';
 import routes from './routes';
 import errorHandler from './middlewares/errorHandler.middleware';
-import { unconnectedRedisClient, connectedRedisClient } from './redis';
+import { unconnectedRedisClient, connectedRedisClient } from './utils/redis';
 import { createSessionMiddleware } from './middlewares/session.middleware';
-
-export const app: Application = express();
+import { rateLimit } from './middlewares/rate-limit.middleware';
+import { eventBus } from './utils/events/event-bus';
+import { connection } from './utils/queue';
 
 async function startServer() {
+  const app: Application = express();
+
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   if (config.enableCORS) {
@@ -32,10 +35,9 @@ async function startServer() {
       debugRoutes: config.features.enableDebugRoutes,
     });
   });
-  app.use('/api', routes);
+  app.use('/api', rateLimit(100, 60), routes);
 
   app.use(errorHandler);
-
 
   const PORT: number = config.env.PORT;
 
@@ -43,7 +45,12 @@ async function startServer() {
     console.log(`🚀 ${config.appName} running on port ${config.env.PORT}`);
   });
 
+  process.on('SIGTERM', async () => {
+    console.log('Shutting down...');
+    await eventBus.close();
+    await connection.quit();
+    process.exit(0);
+  });
 }
 
-
-export default startServer
+export default startServer;
