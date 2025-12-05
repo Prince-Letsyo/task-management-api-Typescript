@@ -3,6 +3,7 @@ import { connection } from '../queue';
 import { config } from '../../config';
 
 type Listener<T = any> = (payload: T, id: string) => Promise<void> | void;
+type StreamEntry = [string, [string, string[]][]];
 
 interface EventMap {
   'user:registered': { userId: number; email: string; name: string };
@@ -15,7 +16,6 @@ interface EventMap {
   };
 }
 
-type StreamEntry = [string, [string, string[]][]];
 
 class StreamBus {
   private redis!: Redis;
